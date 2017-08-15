@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>原生js实现轮播图</title>
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+    }
+
+    .main {
+        width: 1280px;
+        overflow: hidden;
+        position: relative;
+        top: 100px;
+        left: 350px;
+    }
+    /*将显示区域设置为一张图片的宽度，设置overflow: hidden;使超出的部分隐藏，页面只显示一张图片*/
+
+    .images {
+        position: relative;
+        width: 6400px;
+        padding: 0;
+        margin: 0;
+        transition: all 1s;
+        /*设置渐变属性，时间为1s，使图片位移是是滑动的效果*/
+    }
+
+    .image {
+        width: 1280px;
+        float: left;
+        /*li向左浮动，把要轮播的图片放到一行上*/
+        list-style: none;
+    }
+
+    .arrows {
+        z-index: 2;
+        /*重叠，使箭头在图片的上面*/
+        position: absolute;
+        padding-top: 330px;
+        width: 1280px;
+    }
+
+    .arrow {
+        font-size: 3em;
+        color: #FFF5EE;
+    }
+
+    .arrow:last-child {
+        float: right;
+    }
+
+    .arrow:hover {
+        cursor: pointer;
+        background-color: rgba(192, 192, 192, 0.5);
+    }
+
+    .btns {
+        margin-left: 850px;
+    }
+
+    .btn {
+        float: left;
+        border-radius: 50px;
+        background-color: #CCCCCC;
+        width: 50px;
+        height: 10px;
+        margin-left: 10px;
+        margin-top: 120px;
+    }
+
+    .btn:hover {
+        background-color: #5A5AAD;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <div class="arrows">
+            <span class="arrow" title="上一张"><</span>
+            <span class="arrow" title="下一张">></span>
+        </div>
+        <ul class="images">
+            <li class="image"><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1503315746&di=e39156332c4995273d7795e2c98a1985&imgtype=jpg&er=1&src=http%3A%2F%2Fi-7.vcimg.com%2Ftrim%2Fd2e0726d1247fafbd7e624bdb9e58789103071%2Ftrim.jpg"></li>
+            <li class="image"><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1503315777&di=3ac142806e6697b828cab5b720eda267&imgtype=jpg&er=1&src=http%3A%2F%2Fe.hiphotos.baidu.com%2Fzhidao%2Fpic%2Fitem%2F3ac79f3df8dcd10016b0da7d728b4710b9122fb9.jpg"></li>
+            <li class="image"><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1502721074597&di=92cc3137e30069f51ee4facb5f87cefd&imgtype=0&src=http%3A%2F%2Fattimg.dospy.com%2Fimg%2Fday_111119%2F20111119_d131ce4507113218cba0x7VUcSt4DfOt.jpg"></li>
+            <li class="image"><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1503315826&di=fa884dfd749386f6dcd596db66729bc1&imgtype=jpg&er=1&src=http%3A%2F%2Fpic.xiami.net%2Fimages%2Fcollect%2F303%2F3%2F31236303_1400366728_npyh.jpg"></li>
+            <!-- 在最后加第一张图片，实现最后一张到第一张的过渡 -->
+            <li class="image"><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1503315746&di=e39156332c4995273d7795e2c98a1985&imgtype=jpg&er=1&src=http%3A%2F%2Fi-7.vcimg.com%2Ftrim%2Fd2e0726d1247fafbd7e624bdb9e58789103071%2Ftrim.jpg"></li>
+        </ul>
+    </div>
+    <div class="btns">
+        <div class="btn"></div>
+        <div class="btn"></div>
+        <div class="btn"></div>
+        <div class="btn"></div>
+    </div>
+    <script type="text/javascript">
+    //定义全局变量
+    var count = 0;
+    var isTheFinal = false;
+    var timer;
+    window.onload = function() {
+        var images = document.getElementsByClassName('images')[0];
+        var image = document.getElementsByClassName('image');
+        play();
+
+        function play() {
+            timer = setInterval(() => {
+                if (isTheFinal == false) {
+                    if (images.style.transition == 'none') {
+                        //如果渐变效果被取消了，就恢复渐变效果
+                        images.style.transition = 'all 1s';
+                    }
+                    count++;
+                    images.style.transform = "translate(" + -1280 * count + "px)";
+                    if (count >= image.length - 1) {
+                        //当前已播到最后一张图片
+                        count = images.length - 1;
+                        isTheFinal = true;
+                    }
+                } else {
+                    //要从最后一张跳到第一张，所以先取消渐变效果，避免出现画面回退
+                    images.style.transition = 'none';
+                    images.style.transform = "translate(0px)";
+                    isTheFinal = false;
+                    count = 0;
+                }
+                if (count < 4) {
+                    changeBtnColor(count);
+                } else {
+                    changeBtnColor(0);
+                }
+            }, 4000);
+        }
+
+        function pause() {
+            clearInterval(timer);
+        }
+
+        //点击箭头左右滑动
+        var arrow = document.getElementsByClassName('arrow');
+        for (let i = 0; i < arrow.length; i++) {
+            var flag = 0; //标志位，0：正常轮播，1：第一张跳到最后一张，2：最后一张跳到第一张
+            //鼠标放到箭头上时，暂停轮播
+            arrow[i].onmouseover = pause;
+            //鼠标从箭头上移开后，继续轮播事件
+            arrow[i].onmouseout = play;
+            arrow[i].onclick = function() {
+                if (this.title == '上一张') {
+                    count--;
+                    if (count < 0) {
+                        count = 4;
+                        flag = 1;
+                    }
+                } else {
+                    count++;
+                    if (count > 4) {
+                        count = 0;
+                        flag = 2;
+                    }
+                }
+                if (flag == 1) {
+                    images.style.transition = 'none';
+                    images.style.transform = 'translate(-5120px)';
+                    flag = 0;
+                } else if (flag == 2) {
+                    images.style.transition = 'none';
+                    images.style.transform = 'translate(0px)';
+                    flag = 0;
+                } else {
+                    images.style.transition = 'all 1s';
+                    images.style.transform = 'translate(' + -1280 * count + 'px)';
+                }
+                if (count < 4) {
+                    changeBtnColor(count);
+                } else {
+                    changeBtnColor(0);
+                }
+            };
+        }
+
+        //鼠标移动到底部按钮上，改变底部按钮颜色
+        var btn = document.getElementsByClassName('btn');
+        btn[0].style.backgroundColor = '#5A5AAD';
+        for (let i = 0; i < btn.length; i++) {
+            btn[i].onmouseover = function() {
+                pause();
+                changeBtnColor(i);
+                count = i;
+                images.style.transform = 'translate(' + -1280 * i + 'px)';
+            };
+            btn[i].onmouseout = play;
+        }
+        //随着图片变换，改变底部按钮的颜色
+        function changeBtnColor(current) {
+            for (let i = 0; i < btn.length; i++) {
+                btn[i].style.backgroundColor = '#CCCCCC';
+            }
+            btn[current].style.backgroundColor = '#5A5AAD';
+        }
+    };
+    </script>
+</body>
+
+</html>
