@@ -9,3 +9,9 @@
       利用setInterval实现图片周期性的轮播。利用transform的translate对图片的位置进行移动。
       对左右两个箭头，添加onmouserover、onmouseout和onclick事件。鼠标放到箭头上时清除setInterval事件，当前显示图片不变。鼠标移开时，重新设置setInterval事件，轮播继续。点击箭头时，图片向左或者向右移动一张图片的距离，实现图片变换。
       底部的按钮实现思路和功能跟箭头类似。
+
+演示地址：
+[轮播图演示地址][1]
+
+
+  [1]: https://codepen.io/mjnash/pen/dzmewv
